@@ -1,0 +1,298 @@
+/* ==========================================================
+   BBIPL Central Management System
+   settings.css
+========================================================== */
+
+/* Settings Page */
+
+.settings-container{
+
+    max-width:900px;
+
+    margin:0 auto;
+
+    background:#fff;
+
+    border-radius:20px;
+
+    padding:35px;
+
+    box-shadow:var(--shadow);
+
+}
+
+.settings-container h1{
+
+    font-size:32px;
+
+    margin-bottom:30px;
+
+    font-weight:700;
+
+}
+
+.setting-box{
+
+    background:#f9fafb;
+
+    border-radius:16px;
+
+    padding:25px;
+
+    margin-bottom:25px;
+
+    transition:.3s;
+
+}
+
+.setting-box:hover{
+
+    background:#f3f4f6;
+
+}
+
+.setting-box h3{
+
+    font-size:20px;
+
+    margin-bottom:20px;
+
+    color:var(--primary);
+
+    font-weight:600;
+
+}
+
+.setting-box label{
+
+    display:block;
+
+    font-weight:600;
+
+    margin-bottom:8px;
+
+    margin-top:15px;
+
+    color:var(--text);
+
+}
+
+.setting-box label:first-of-type{
+
+    margin-top:0;
+
+}
+
+.setting-box input{
+
+    width:100%;
+
+    padding:14px 18px;
+
+    border:1px solid var(--border);
+
+    border-radius:12px;
+
+    outline:none;
+
+    font-size:15px;
+
+    font-family:inherit;
+
+    transition:.3s;
+
+    background:#fff;
+
+}
+
+.setting-box input:focus{
+
+    border-color:var(--primary);
+
+    box-shadow:0 0 0 4px rgba(79,70,229,.1);
+
+}
+
+.setting-box select{
+
+    width:100%;
+
+    padding:14px 18px;
+
+    border:1px solid var(--border);
+
+    border-radius:12px;
+
+    outline:none;
+
+    font-size:15px;
+
+    font-family:inherit;
+
+    background:#fff;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.setting-box select:focus{
+
+    border-color:var(--primary);
+
+}
+
+/* Toggle Switch */
+
+.toggle-group{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:15px 0;
+
+    border-bottom:1px solid var(--border);
+
+}
+
+.toggle-group:last-child{
+
+    border-bottom:none;
+
+}
+
+.toggle-group span{
+
+    font-weight:500;
+
+    font-size:15px;
+
+}
+
+.toggle{
+
+    position:relative;
+
+    width:52px;
+
+    height:28px;
+
+    background:#ddd;
+
+    border-radius:50px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.toggle.active{
+
+    background:var(--primary);
+
+}
+
+.toggle::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:22px;
+
+    height:22px;
+
+    border-radius:50%;
+
+    background:#fff;
+
+    top:3px;
+
+    left:3px;
+
+    transition:.3s;
+
+    box-shadow:0 2px 5px rgba(0,0,0,.15);
+
+}
+
+.toggle.active::after{
+
+    left:27px;
+
+}
+
+/* Hide original checkbox */
+
+.toggle-input{
+
+    display:none;
+
+}
+
+/* Save / Reset Buttons */
+
+.settings-buttons{
+
+    display:flex;
+
+    gap:15px;
+
+    margin-top:30px;
+
+}
+
+.settings-buttons button{
+
+    flex:1;
+
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media(max-width:768px){
+
+    .settings-container{
+
+        padding:20px;
+
+        border-radius:15px;
+
+    }
+
+    .setting-box{
+
+        padding:18px;
+
+    }
+
+    .settings-buttons{
+
+        flex-direction:column;
+
+    }
+
+}
+
+@media(max-width:576px){
+
+    .settings-container h1{
+
+        font-size:26px;
+
+    }
+
+    .setting-box h3{
+
+        font-size:18px;
+
+    }
+
+}

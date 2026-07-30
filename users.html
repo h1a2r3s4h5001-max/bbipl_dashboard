@@ -1,0 +1,138 @@
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users | BBIPL CMS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/users.css">
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="logo"><img src="images/logo.png" alt="Logo"><h2>BBIPL CMS</h2></div>
+    <ul>
+        <li><a href="index.html"><i class="fa-solid fa-house"></i><span>Dashboard</span></a></li>
+        <li><a href="media.html"><i class="fa-solid fa-images"></i><span>Media</span></a></li>
+        <li class="active"><a href="users.html"><i class="fa-solid fa-users"></i><span>Users</span></a></li>
+        <li><a href="settings.html"><i class="fa-solid fa-gear"></i><span>Settings</span></a></li>
+    </ul>
+    <div class="logout"><button id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button></div>
+</aside>
+
+<div class="main">
+    <nav class="navbar">
+        <div class="left"><button id="menuBtn"><i class="fa-solid fa-bars"></i></button><h1>Users</h1></div>
+        <div class="center"><div class="search-box"><i class="fa-solid fa-search"></i><input type="text" id="userSearch" placeholder="Search users..."></div></div>
+        <div class="right">
+            <button class="icon-btn"><i class="fa-regular fa-bell"></i><span class="badge">3</span></button>
+            <div class="profile"><img src="images/profile.png" alt="Profile"><div><h3 id="username">Administrator</h3><p>Admin</p></div></div>
+        </div>
+    </nav>
+
+    <section class="welcome">
+        <div><h2>User Management</h2><p>Manage authors, editors, and administrators.</p></div>
+        <button class="primary-btn" id="addUserBtn"><i class="fa-solid fa-user-plus"></i> Add User</button>
+    </section>
+
+    <!-- Summary Cards -->
+    <section class="cards" style="margin-bottom:30px;">
+        <div class="card blue">
+            <div class="card-info"><h4>Total Users</h4><h2 id="totalUsers">0</h2><p>Registered Users</p></div>
+            <div class="card-icon"><i class="fa-solid fa-users"></i></div>
+        </div>
+        <div class="card green">
+            <div class="card-info"><h4>Active</h4><h2 id="activeUsers">0</h2><p>Currently Active</p></div>
+            <div class="card-icon"><i class="fa-solid fa-user-check"></i></div>
+        </div>
+        <div class="card orange">
+            <div class="card-info"><h4>Admins</h4><h2 id="adminCount">0</h2><p>Administrators</p></div>
+            <div class="card-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        </div>
+        <div class="card red">
+            <div class="card-info"><h4>Editors, Authors & Users</h4><h2 id="editorCount">0</h2><p>Content Contributors</p></div>
+            <div class="card-icon"><i class="fa-solid fa-pen-to-square"></i></div>
+        </div>
+    </section>
+
+    <!-- Filters & Actions -->
+    <section class="table-card">
+        <div class="card-header">
+            <h3>User Directory</h3>
+            <div class="table-actions">
+                <select id="roleFilter"><option value="all">All Roles</option><option>Admin</option><option>Editor</option><option>Author</option><option>User</option></select>
+                <select id="statusFilter"><option value="all">All Status</option><option>Active</option><option>Inactive</option><option>Suspended</option></select>
+                <button id="refreshUsers" class="primary-btn"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table id="userDataTable">
+                <thead>
+                    <tr><th>Photo</th><th>User ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Status</th><th>Role</th><th>Actions</th></tr>
+                </thead>
+                <tbody id="userTable"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Pagination -->
+    <section class="pagination-section">
+        <div class="pagination-info">Showing <strong id="recordCount">0</strong> Users</div>
+        <div class="pagination"></div>
+    </section>
+
+    <!-- Add/Edit User Modal -->
+    <div id="userModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header"><h2 id="modalTitle">Add User</h2><button id="closeUserModal" class="close-btn"><i class="fa-solid fa-xmark"></i></button></div>
+            <form id="userForm">
+                <input type="hidden" id="userIndex">
+                <input type="hidden" id="userId">
+                <div class="form-grid">
+                    <div class="form-group"><label>Full Name *</label><input type="text" id="userName" placeholder="Enter Full Name" required></div>
+                    <div class="form-group"><label>Email Address *</label><input type="email" id="userEmail" placeholder="email@example.com" required></div>
+                    <div class="form-group"><label>Phone Number</label><input type="tel" id="userPhone" placeholder="+91 9876543210"></div>
+                    <div class="form-group"><label>Role</label><select id="userRole"><option>Admin</option><option>Editor</option><option>Author</option><option>User</option></select></div>
+                    <div class="form-group"><label>Status</label><select id="userStatus"><option>Active</option><option>Inactive</option><option>Suspended</option></select></div>
+                    <div class="form-group"><label>Profile Photo</label><input type="file" id="userPhoto" accept="image/*"></div>
+                    <div class="form-group full-width"><label>Bio</label><textarea id="userBio" rows="3" placeholder="Short bio..."></textarea></div>
+                </div>
+                <div class="form-buttons"><button type="reset" class="secondary-btn">Reset</button><button type="submit" class="primary-btn">Save User</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content small">
+            <div class="delete-box">
+                <i class="fa-solid fa-triangle-exclamation delete-icon"></i>
+                <h2>Delete User</h2>
+                <p>Are you sure you want to delete this user? This action cannot be undone.</p>
+                <div class="delete-buttons">
+                    <button id="cancelDelete" class="secondary-btn">Cancel</button>
+                    <button id="confirmDelete" class="danger-btn">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loader, Toast, Footer -->
+    <div id="loader"><div class="loader-spinner"></div><h3>Loading Users...</h3></div>
+    <div id="toast" class="toast"><i class="fa-solid fa-circle-check"></i><span id="toastMessage">User Saved</span></div>
+    <button id="scrollTopBtn" class="scroll-top"><i class="fa-solid fa-arrow-up"></i></button>
+    <footer class="footer"><div>© 2026 BBIPL Central Management System</div><div>Version 2.0.0</div></footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="js/app.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/users.js"></script>
+
+</body>
+</html>

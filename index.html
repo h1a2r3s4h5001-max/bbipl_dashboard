@@ -1,0 +1,426 @@
+b <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | BBIPL CMS</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+</head>
+<body>
+
+<!-- ========================================= -->
+<!-- Sidebar -->
+<!-- ========================================= -->
+<aside class="sidebar">
+    <div class="logo">
+        <img src="images/logo.png" alt="Logo">
+<h2>Big Box International</h2>
+    </div>
+    <ul>
+<li class="active"><a href="index.html"><i class="fa-solid fa-house"></i><span>Dashboard</span></a></li>
+        <li><a href="media.html"><i class="fa-solid fa-images"></i><span>Media</span></a></li>
+        <li><a href="users.html"><i class="fa-solid fa-users"></i><span>Users</span></a></li>
+        <li><a href="settings.html"><i class="fa-solid fa-gear"></i><span>Settings</span></a></li>
+    </ul>
+    <div class="logout">
+        <button id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </div>
+</aside>
+
+<!-- ========================================= -->
+<!-- Main Content -->
+<!-- ========================================= -->
+<div class="main">
+
+    <!-- ========================================= -->
+    <!-- Navbar -->
+    <!-- ========================================= -->
+    <nav class="navbar">
+        <div class="left">
+            <button id="menuBtn"><i class="fa-solid fa-bars"></i></button>
+            <h1>Dashboard</h1>
+        </div>
+        <div class="center">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Search content...">
+            </div>
+        </div>
+        <div class="right">
+            <div class="icon-group">
+                <button class="icon-btn"><i class="fa-regular fa-bell"></i><span class="badge">3</span></button>
+                <button class="icon-btn"><i class="fa-regular fa-envelope"></i><span class="badge">5</span></button>
+            </div>
+            <div class="nav-divider"></div>
+            <div class="profile">
+                <img src="images/profile.png" alt="Profile">
+                <div class="profile-info">
+                    <h3 id="username">Administrator</h3>
+                    <p>user</p>
+                </div>
+                <i class="fa-solid fa-chevron-down profile-arrow"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========================================= -->
+    <!-- Dashboard Header -->
+    <!-- ========================================= -->
+<section class="welcome reveal" data-reveal="fade-up" data-delay="100">
+        <div>
+            <h2>Welcome Back, <span id="welcomeName">Admin</span> 👋</h2>
+            <p>Here's an overview of your content management system.</p>
+        </div>
+<div>
+            <a href="media.html" class="primary-btn ripple"><i class="fa-solid fa-plus"></i> Upload Media</a>
+        </div>
+    </section>
+
+    <!-- ========================================= -->
+    <!-- Statistics Cards -->
+    <!-- ========================================= -->
+    <section class="cards">
+        <div class="card orange">
+            <div class="card-info">
+                <h4>Media Files</h4>
+                <h2 id="mediaCount">0</h2>
+                <p><i class="fa-solid fa-images"></i> Uploaded Files</p>
+            </div>
+            <div class="card-icon"><i class="fa-solid fa-images"></i></div>
+        </div>
+        <div class="card red">
+            <div class="card-info">
+                <h4>Users</h4>
+                <h2 id="userCount">0</h2>
+                <p><i class="fa-solid fa-users"></i> Registered Users</p>
+            </div>
+            <div class="card-icon"><i class="fa-solid fa-users"></i></div>
+        </div>
+    </section>
+
+    <!-- ========================================= -->
+    <!-- Analytics Section -->
+    <!-- ========================================= -->
+    <section class="analytics reveal" data-reveal="fade-up" data-delay="200">
+        <div class="chart-card">
+            <div class="card-header">
+                <div>
+                    <h3>System Overview</h3>
+                    <p>Monthly Activity</p>
+                </div>
+                <select>
+                    <option>2026</option><option>2025</option><option>2024</option>
+                </select>
+            </div>
+            <canvas id="contentChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <div class="card-header">
+                <div>
+                    <h3>Content Distribution</h3>
+                    <p>All Content Types</p>
+                </div>
+            </div>
+            <canvas id="distributionChart"></canvas>
+        </div>
+    </section>
+
+    <!-- ========================================= -->
+    <!-- Recent Activity -->
+    <!-- ========================================= -->
+    <section class="bottom-grid">
+        <div class="activity-card">
+            <div class="card-header">
+                <h3>Recent Activity</h3>
+            </div>
+            <div class="activity-list">
+                <div class="activity-item">
+                    <div class="activity-icon blue"><i class="fa-solid fa-file-lines"></i></div>
+                    <div>
+                        <h4>CMS Initialized</h4>
+                        <p>Content Management System is ready.</p>
+                        <small>Just Now</small>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon orange"><i class="fa-solid fa-images"></i></div>
+                    <div>
+                        <h4>Media Library Active</h4>
+                        <p>Upload images and files to the media library.</p>
+                        <small>Just Now</small>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon red"><i class="fa-solid fa-users"></i></div>
+                    <div>
+                        <h4>User Management</h4>
+                        <p>Manage authors, editors, and administrators.</p>
+                        <small>Just Now</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================= -->
+    <!-- Quick Links Widget -->
+    <!-- ========================================= -->
+    <section class="widgets">
+        <div class="widget-card">
+            <div class="card-header">
+                <h3>Quick Links</h3>
+            </div>
+            <ul class="notification-list">
+                <li><a href="media.html"><i class="fa-solid fa-images"></i> Upload Media</a></li>
+                <li><a href="users.html"><i class="fa-solid fa-users"></i> Manage Users</a></li>
+                <li><a href="settings.html"><i class="fa-solid fa-gear"></i> Site Settings</a></li>
+            </ul>
+        </div>
+        <div class="widget-card">
+            <div class="card-header">
+                <h3>Calendar</h3>
+            </div>
+            <div class="calendar">
+                <h2 id="calendarTitle">July 2026</h2>
+                <div class="weekdays">
+                    <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+                </div>
+                <div class="days" id="calendarDays">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================= -->
+    <!-- Footer -->
+    <!-- ========================================= -->
+    <footer class="footer">
+        <div>© 2026 BBIPL Central Management System. All Rights Reserved.</div>
+        <div>Version 2.0.0</div>
+    </footer>
+
+</div>
+<!-- End Main -->
+
+<!-- ========================================= -->
+<!-- Page Transition Overlay -->
+<!-- ========================================= -->
+<div id="pageTransition" class="page-transition"></div>
+
+<!-- ========================================= -->
+<!-- Floating Action Button -->
+<!-- ========================================= -->
+<button id="scrollTopBtn" class="scroll-top"><i class="fa-solid fa-arrow-up"></i></button>
+
+<!-- ========================================= -->
+<!-- Loading Screen -->
+<!-- ========================================= -->
+<div id="loader">
+    <div class="loader-spinner"></div>
+    <h3>Loading Dashboard...</h3>
+</div>
+
+    <!-- ========================================= -->
+    <!-- Toast Notification -->
+    <!-- ========================================= -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toastMessage">Welcome Back!</span>
+    </div>
+
+    <!-- ========================================= -->
+    <!-- Notification Panel -->
+    <!-- ========================================= -->
+    <div class="notification-panel" id="notificationPanel">
+        <div class="notification-header">
+            <div class="notification-header-left">
+                <i class="fa-solid fa-bell"></i>
+                <span>Notifications</span>
+            </div>
+            <button class="notification-mark-read" id="markAllRead" title="Mark all as read">
+                <i class="fa-solid fa-check-double"></i>
+            </button>
+        </div>
+        <div class="notification-body" id="notificationBody">
+            <div class="notification-item unread">
+                <div class="notif-icon blue"><i class="fa-solid fa-file-lines"></i></div>
+                <div class="notif-content">
+                    <h4>New page published</h4>
+                    <p>A new page "About Us" has been created.</p>
+                    <small>2 minutes ago</small>
+                </div>
+                <button class="notif-dismiss" title="Dismiss"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="notification-item unread">
+                <div class="notif-icon green"><i class="fa-solid fa-newspaper"></i></div>
+                <div class="notif-content">
+                    <h4>Blog post scheduled</h4>
+                    <p>"Company Update" is scheduled for tomorrow.</p>
+                    <small>15 minutes ago</small>
+                </div>
+                <button class="notif-dismiss" title="Dismiss"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="notification-item unread">
+                <div class="notif-icon orange"><i class="fa-solid fa-user-plus"></i></div>
+                <div class="notif-content">
+                    <h4>New user registered</h4>
+                    <p>John Doe has created an account.</p>
+                    <small>1 hour ago</small>
+                </div>
+                <button class="notif-dismiss" title="Dismiss"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="notification-item">
+                <div class="notif-icon red"><i class="fa-solid fa-exclamation-triangle"></i></div>
+                <div class="notif-content">
+                    <h4>System update available</h4>
+                    <p>Version 2.1.0 is ready to install.</p>
+                    <small>Yesterday</small>
+                </div>
+                <button class="notif-dismiss" title="Dismiss"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+        </div>
+        <div class="notification-footer">
+            <a href="#">View All Notifications</a>
+        </div>
+    </div>
+
+    <!-- ========================================= -->
+    <!-- Messages Panel -->
+    <!-- ========================================= -->
+    <div class="notification-panel" id="messagesPanel">
+        <div class="notification-header" style="background:linear-gradient(135deg,#0ea5e9,#0284c7);">
+            <div class="notification-header-left">
+                <i class="fa-solid fa-envelope"></i>
+                <span>Messages</span>
+            </div>
+            <button class="notification-mark-read" id="markMessagesRead" title="Mark all as read">
+                <i class="fa-solid fa-check-double"></i>
+            </button>
+        </div>
+        <div class="notification-body" id="messagesBody">
+            <div class="notification-item unread">
+                <div class="notif-icon blue"><i class="fa-solid fa-user"></i></div>
+                <div class="notif-content">
+                    <h4>Sarah Wilson</h4>
+                    <p>Can you review the new blog post?</p>
+                    <small>5 minutes ago</small>
+                </div>
+                <button class="notif-dismiss" title="Dismiss"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="notification-item unread">
+                <div class="notif-icon green"><i class="fa-solid fa-user"></i></div>
+                <div class="notif-content">
+                    <h4>Mike Johnson</h4>
+                    <p>The media upload module is ready.</p>
+                    <small>30 minutes ago</small>
+                </div>
+                <button class="notif-dismiss" title="Dismiss"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="notification-item">
+                <div class="notif-icon orange"><i class="fa-solid fa-user"></i></div>
+                <div class="notif-content">
+                    <h4>Emily Davis</h4>
+                    <p>Thanks for the quick update!</p>
+                    <small>2 hours ago</small>
+                </div>
+                <button class="notif-dismiss" title="Dismiss"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+        </div>
+        <div class="notification-footer">
+            <a href="#">View All Messages</a>
+        </div>
+    </div>
+
+    <!-- ========================================= -->
+    <!-- Profile Dropdown -->
+    <!-- ========================================= -->
+    <div class="profile-dropdown" id="profileDropdown">
+        <div class="dropdown-header">
+            <img src="images/profile.png" alt="Profile" id="dropdownProfileImg">
+            <div>
+                <h4 id="dropdownUsername">Administrator</h4>
+                <p id="dropdownUserRole">Admin</p>
+            </div>
+        </div>
+<a href="settings.html"><i class="fa-solid fa-user"></i> My Profile</a>
+        <a href="settings.html"><i class="fa-solid fa-gear"></i> Settings</a>
+        <hr>
+        <a href="#" id="themeToggle"><i class="fa-solid fa-moon"></i> Dark Mode</a>
+        <hr>
+        <a href="login.html" id="logoutDropdown"><i class="fa-solid fa-right-from-bracket" style="color:var(--danger);"></i> <span style="color:var(--danger);">Logout</span></a>
+    </div>
+
+<!-- ========================================= -->
+<!-- Chart.js -->
+<!-- ========================================= -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Dashboard Script -->
+<script src="js/dashboard.js"></script>
+
+<!-- Main App Script -->
+<script src="js/app.js"></script>
+
+<!-- Notification Manager -->
+<script src="js/notifications.js"></script>
+
+<!-- Animation Engine -->
+<script src="js/animations.js"></script>
+
+<!-- Page Initialization -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    if(localStorage.getItem("isLoggedIn") !== "true"){
+        window.location.href = "login.html";
+        return;
+    }
+
+const media = JSON.parse(localStorage.getItem("cmsMedia") || "[]");
+    const users = JSON.parse(localStorage.getItem("cmsUsers") || "[]");
+
+    // Calendar
+    const now = new Date();
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    document.getElementById('calendarTitle').textContent = `${months[now.getMonth()]} ${now.getFullYear()}`;
+    const daysContainer = document.getElementById('calendarDays');
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
+    const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    let calHTML = '';
+    for(let i = 0; i < firstDay; i++) calHTML += '<span></span>';
+    for(let d = 1; d <= daysInMonth; d++) {
+        const isToday = d === now.getDate() ? ' class="today"' : '';
+        calHTML += `<span${isToday}>${d}</span>`;
+    }
+    daysContainer.innerHTML = calHTML;
+
+    const scrollBtn = document.getElementById("scrollTopBtn");
+    window.addEventListener("scroll",()=>{
+        scrollBtn.classList.toggle("show", window.scrollY > 300);
+    });
+    scrollBtn.addEventListener("click",()=>{
+        window.scrollTo({top:0,behavior:"smooth"});
+    });
+
+    setTimeout(()=>{
+        const loader=document.getElementById("loader");
+        if(loader){
+            loader.style.opacity="0";
+            setTimeout(()=>{loader.style.display="none";},500);
+        }
+    },800);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,350 @@
+/* ==========================================================
+   BBIPL ADMIN DASHBOARD
+   sidebar.css
+========================================================== */
+
+/* ==========================
+   SIDEBAR
+========================== */
+
+.sidebar{
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:280px;
+    height:100vh;
+
+    background:linear-gradient(
+        180deg,
+        #4f46e5 0%,
+        #4338ca 50%,
+        #312e81 100%
+    );
+
+    color:#fff;
+
+    display:flex;
+    flex-direction:column;
+
+    overflow:hidden;
+
+    z-index:1000;
+
+    transition:.35s ease;
+
+    box-shadow:8px 0 30px rgba(0,0,0,.15);
+
+}
+
+/* ==========================
+   LOGO
+========================== */
+
+.logo{
+
+    height:90px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:15px;
+
+    border-bottom:1px solid rgba(255,255,255,.12);
+
+}
+
+.logo img{
+
+    width:50px;
+    height:50px;
+
+    border-radius:12px;
+
+    object-fit:cover;
+
+    background:#fff;
+
+}
+
+.logo h2{
+
+    color:#fff;
+
+    font-size:24px;
+
+    font-weight:700;
+
+    letter-spacing:1px;
+
+}
+
+/* ==========================
+   MENU
+========================== */
+
+.sidebar ul{
+
+    flex:1;
+
+    padding:25px 15px;
+
+}
+
+.sidebar ul li{
+
+    margin-bottom:10px;
+
+}
+
+.sidebar ul li a{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:16px;
+
+    padding:15px 18px;
+
+    border-radius:14px;
+
+    color:#ffffff;
+
+    font-size:15px;
+
+    font-weight:500;
+
+    transition:.30s;
+
+}
+
+/* ==========================
+   ICON
+========================== */
+
+.sidebar ul li a i{
+
+    width:24px;
+
+    text-align:center;
+
+    font-size:18px;
+
+}
+
+/* ==========================
+   HOVER
+========================== */
+
+.sidebar ul li a:hover{
+
+    background:rgba(255,255,255,.15);
+
+    transform:translateX(8px);
+
+}
+
+/* ==========================
+   ACTIVE
+========================== */
+
+.sidebar ul li.active a{
+
+    background:#ffffff;
+
+    color:#4f46e5;
+
+    font-weight:600;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.15);
+
+}
+
+.sidebar ul li.active a i{
+
+    color:#4f46e5;
+
+}
+
+/* ==========================
+   LOGOUT
+========================== */
+
+.logout{
+
+    padding:20px;
+
+    border-top:1px solid rgba(255,255,255,.15);
+
+}
+
+.logout button{
+
+    width:100%;
+
+    padding:15px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:#ef4444;
+
+    color:#fff;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.30s;
+
+}
+
+.logout button:hover{
+
+    background:#dc2626;
+
+    transform:translateY(-2px);
+
+}
+
+.logout button i{
+
+    margin-right:10px;
+
+}
+
+/* ==========================
+   SCROLLBAR
+========================== */
+
+.sidebar::-webkit-scrollbar{
+
+    width:6px;
+
+}
+
+.sidebar::-webkit-scrollbar-thumb{
+
+    background:rgba(255,255,255,.25);
+
+    border-radius:30px;
+
+}
+
+/* ==========================
+   COLLAPSED SIDEBAR
+========================== */
+
+.sidebar.collapsed{
+
+    width:90px;
+
+}
+
+.sidebar.collapsed .logo h2{
+
+    display:none;
+
+}
+
+.sidebar.collapsed ul li a span{
+
+    display:none;
+
+}
+
+.sidebar.collapsed .logout button{
+
+    font-size:0;
+
+}
+
+.sidebar.collapsed .logout button i{
+
+    margin-right:0;
+
+    font-size:20px;
+
+}
+
+/* ==========================
+   SIDEBAR OVERLAY
+========================== */
+
+.sidebar-overlay{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.45);
+
+    opacity:0;
+
+    visibility:hidden;
+
+    transition:.3s;
+
+    z-index:999;
+
+}
+
+.sidebar-overlay.show{
+
+    opacity:1;
+
+    visibility:visible;
+
+}
+
+/* ==========================
+   MENU ANIMATION
+========================== */
+
+.sidebar ul li{
+
+    opacity:0;
+
+    transform:translateX(-20px);
+
+    animation:menuFade .5s forwards;
+
+}
+
+.sidebar ul li:nth-child(1){animation-delay:.05s;}
+.sidebar ul li:nth-child(2){animation-delay:.10s;}
+.sidebar ul li:nth-child(3){animation-delay:.15s;}
+.sidebar ul li:nth-child(4){animation-delay:.20s;}
+.sidebar ul li:nth-child(5){animation-delay:.25s;}
+.sidebar ul li:nth-child(6){animation-delay:.30s;}
+.sidebar ul li:nth-child(7){animation-delay:.35s;}
+.sidebar ul li:nth-child(8){animation-delay:.40s;}
+
+@keyframes menuFade{
+
+    from{
+
+        opacity:0;
+
+        transform:translateX(-20px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateX(0);
+
+    }
+
+}

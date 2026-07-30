@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | BBIPL CMS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/settings.css">
+</head>
+<body>
+
+<!-- ========================================= -->
+<!-- Sidebar -->
+<!-- ========================================= -->
+<aside class="sidebar">
+    <div class="logo">
+        <img src="images/logo.png" alt="Logo">
+        <h2>BBIPL CMS</h2>
+    </div>
+    <ul>
+        <li><a href="index.html"><i class="fa-solid fa-house"></i><span>Dashboard</span></a></li>
+        <li><a href="media.html"><i class="fa-solid fa-images"></i><span>Media</span></a></li>
+        <li><a href="users.html"><i class="fa-solid fa-users"></i><span>Users</span></a></li>
+        <li class="active"><a href="settings.html"><i class="fa-solid fa-gear"></i><span>Settings</span></a></li>
+    </ul>
+    <div class="logout">
+        <button id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </div>
+</aside>
+
+<!-- ========================================= -->
+<!-- Main Content -->
+<!-- ========================================= -->
+<div class="main">
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="left">
+            <button id="menuBtn"><i class="fa-solid fa-bars"></i></button>
+            <h1>Settings</h1>
+        </div>
+        <div class="center">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Search settings...">
+            </div>
+        <div class="right">
+            <div class="icon-group">
+                <button class="icon-btn"><i class="fa-regular fa-bell"></i><span class="badge">3</span></button>
+                <button class="icon-btn"><i class="fa-regular fa-envelope"></i><span class="badge">5</span></button>
+            </div>
+            <div class="nav-divider"></div>
+            <div class="profile">
+                <img src="images/profile.png" alt="Profile">
+                <div class="profile-info">
+                    <h3 id="username">Administrator</h3>
+                    <p>Admin</p>
+                </div>
+                <i class="fa-solid fa-chevron-down profile-arrow"></i>
+            </div>
+    </nav>
+
+    <!-- Settings Content -->
+    <div class="settings-container">
+        <h1>Settings</h1>
+        <form id="settingsForm">
+
+            <!-- Site Settings -->
+            <div class="setting-box">
+                <h3><i class="fa-solid fa-globe"></i> Site Settings</h3>
+                <label>Site Name</label>
+                <input type="text" id="siteName" placeholder="Enter site name">
+                <label>Tagline</label>
+                <input type="text" id="siteTagline" placeholder="Enter site tagline">
+                <label>Site Email</label>
+                <input type="email" id="email" placeholder="Enter site email">
+            </div>
+
+            <!-- SEO Settings -->
+            <div class="setting-box">
+                <h3><i class="fa-solid fa-magnifying-glass"></i> SEO Settings</h3>
+                <label>Default SEO Title</label>
+                <input type="text" id="seoTitle" placeholder="Enter default SEO title">
+                <label>Default Meta Description</label>
+                <input type="text" id="seoDesc" placeholder="Enter default meta description">
+            </div>
+
+            <!-- Preferences -->
+            <div class="setting-box">
+                <h3><i class="fa-solid fa-palette"></i> Preferences</h3>
+                <div class="toggle-group">
+                    <span>Dark Mode</span>
+                    <label class="toggle" id="darkModeToggle">
+                        <input type="checkbox" id="darkMode" class="toggle-input">
+                    </label>
+                </div>
+                <div class="toggle-group">
+                    <span>Notifications</span>
+                    <label class="toggle" id="notificationsToggle">
+                        <input type="checkbox" id="notifications" class="toggle-input">
+                    </label>
+                </div>
+
+            <!-- Notification Settings -->
+            <div class="setting-box" id="notificationSettingsBox">
+                <h3><i class="fa-solid fa-bell"></i> Notification Settings</h3>
+                <div class="toggle-group">
+                    <span><i class="fa-solid fa-envelope" style="margin-right:8px;color:var(--primary);"></i> Email Notifications</span>
+                    <label class="toggle">
+                        <input type="checkbox" id="emailNotifs" class="toggle-input">
+                    </label>
+                </div>
+                <div class="toggle-group">
+                    <span><i class="fa-solid fa-bell" style="margin-right:8px;color:var(--primary);"></i> Browser Notifications</span>
+                    <label class="toggle">
+                        <input type="checkbox" id="browserNotifs" class="toggle-input">
+                    </label>
+                </div>
+<div class="toggle-group">
+                    <span><i class="fa-solid fa-volume-high" style="margin-right:8px;color:var(--primary);"></i> Sound Alerts</span>
+                    <label class="toggle">
+                        <input type="checkbox" id="soundNotifs" class="toggle-input">
+                    </label>
+                </div>
+                <div class="toggle-group">
+                    <span><i class="fa-solid fa-users" style="margin-right:8px;color:var(--primary);"></i> User Notifications</span>
+                    <label class="toggle">
+                        <input type="checkbox" id="userNotifs" class="toggle-input">
+                    </label>
+                </div>
+                <div class="toggle-group">
+                    <span><i class="fa-solid fa-gear" style="margin-right:8px;color:var(--primary);"></i> System Notifications</span>
+                    <label class="toggle">
+                        <input type="checkbox" id="systemNotifs" class="toggle-input">
+                    </label>
+                </div>
+                <div style="margin-top:15px;display:flex;gap:10px;">
+                    <button type="button" id="addDemoNotifBtn" class="secondary-btn" style="flex:1;">
+                        <i class="fa-solid fa-bolt"></i> Add Demo Notification
+                    </button>
+                    <button type="button" id="clearAllNotifsBtn" class="danger-btn" style="flex:1;">
+                        <i class="fa-solid fa-trash-can"></i> Clear All
+                    </button>
+                </div>
+
+            <!-- Company Settings -->
+            <div class="setting-box">
+                <h3><i class="fa-solid fa-building"></i> Company</h3>
+                <label>Company Name</label>
+                <input type="text" value="BBIPL" readonly>
+                <label>Currency</label>
+                <select>
+                    <option>INR (₹)</option>
+                    <option>USD ($)</option>
+                    <option>EUR (€)</option>
+                </select>
+                <label>Time Zone</label>
+                <select>
+                    <option>Asia/Kolkata (IST)</option>
+                    <option>America/New_York (EST)</option>
+                    <option>Europe/London (GMT)</option>
+                </select>
+            </div>
+
+            <!-- SMTP / Email Configuration -->
+            <div class="setting-box">
+                <h3><i class="fa-solid fa-envelope"></i> SMTP / Email Configuration</h3>
+                <p style="margin-bottom:15px;font-size:13px;color:var(--text-light);line-height:1.6;">
+                    Configure Gmail SMTP to send real OTP emails. Uses <strong>Gmail App Password</strong> for secure authentication.
+                    <a href="https://support.google.com/accounts/answer/185833" target="_blank" style="color:var(--primary);font-weight:600;">How to create an App Password →</a>
+                </p>
+                <div class="toggle-group" style="border-bottom:none;padding-top:0;">
+                    <span><i class="fa-solid fa-toggle-on" style="margin-right:8px;color:var(--primary);"></i> Enable SMTP (Gmail)</span>
+                    <label class="toggle" id="smtpEnabledToggle">
+                        <input type="checkbox" id="smtpEnabled" class="toggle-input">
+                    </label>
+                </div>
+                <div id="smtpFields" style="display:none;">
+                    <div style="background:#fefce8;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;margin-bottom:18px;font-size:13px;color:#92400e;line-height:1.6;">
+                        <strong>📌 How to get Gmail App Password:</strong>
+                        <ol style="margin:8px 0 0 18px;padding:0;">
+                            <li>Go to your <a href="https://myaccount.google.com/security" target="_blank" style="color:#2563eb;">Google Account → Security</a></li>
+                            <li>Enable <strong>2-Step Verification</strong> (if not already enabled)</li>
+                            <li>Go to <strong>App Passwords</strong> (search in Google Account settings)</li>
+                            <li>Select <strong>Mail</strong> and your device, then click <strong>Generate</strong></li>
+                            <li>Copy the 16-character password and paste it below</li>
+                        </ol>
+                    </div>
+                    <label>Gmail Email Address *</label>
+                    <input type="email" id="smtpGmailEmail" placeholder="your.email@gmail.com">
+                    <label>Gmail App Password *</label>
+                    <div class="input-box" style="position:relative;">
+                        <input type="password" id="smtpAppPassword" placeholder="16-character app password (e.g. abcd efgh ijkl mnop)" style="padding-right:45px;">
+                        <i class="fa-regular fa-eye" id="toggleAppPassword" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;color:#9ca3af;"></i>
+                    </div>
+                    <label>From Name (optional)</label>
+                    <input type="text" id="smtpFromName" placeholder="BBIPL CMS">
+                    <div style="display:flex;gap:12px;margin-top:15px;flex-wrap:wrap;">
+                        <button type="button" id="testSmtpBtn" class="secondary-btn" style="flex:1;min-width:180px;">
+                            <i class="fa-solid fa-vial"></i> Send Test Email
+                        </button>
+                        <button type="button" id="checkSmtpStatusBtn" class="secondary-btn" style="flex:1;min-width:180px;">
+                            <i class="fa-solid fa-server"></i> Check Server Status
+                        </button>
+                    </div>
+                    <div id="smtpStatus" style="margin-top:12px;padding:10px 14px;border-radius:10px;font-size:13px;display:none;"></div>
+                </div>
+            </div>
+
+            <div class="settings-buttons">
+                <button type="button" id="resetSettings" class="secondary-btn">
+                    <i class="fa-solid fa-rotate-left"></i> Reset All
+                </button>
+                <button type="submit" id="saveSettings" class="primary-btn">
+                    <i class="fa-solid fa-floppy-disk"></i> Save Settings
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div>&copy; 2026 BBIPL Central Management System. All Rights Reserved.</div>
+        <div>Version 2.0.0</div>
+    </footer>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast">
+    <i class="fa-solid fa-circle-check"></i>
+    <span id="toastMessage">Settings Saved Successfully</span>
+</div>
+
+<!-- Scroll to Top -->
+<button id="scrollTopBtn" class="scroll-top"><i class="fa-solid fa-arrow-up"></i></button>
+
+<!-- Loader -->
+<div id="loader">
+    <div class="loader-spinner"></div>
+    <h3>Loading Settings...</h3>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="js/app.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/notifications.js"></script>
+<script src="js/email.js"></script>
+<script src="js/settings.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(() => {
+        const loader = document.getElementById("loader");
+        if(loader){ loader.style.opacity = "0"; setTimeout(() => { loader.style.display = "none"; }, 500); }
+    }, 700);
+
+    const scrollBtn = document.getElementById("scrollTopBtn");
+    window.addEventListener("scroll", () => { scrollBtn.classList.toggle("show", window.scrollY > 300); });
+    scrollBtn.addEventListener("click", () => { window.scrollTo({ top: 0, behavior: "smooth" }); });
+
+    document.querySelectorAll('.toggle').forEach(toggle => {
+        const input = toggle.querySelector('.toggle-input');
+        if (input) {
+            input.addEventListener('change', function() { toggle.classList.toggle('active', this.checked); });
+            if (input.checked) toggle.classList.add('active');
+        }
+    });
+});
+</script>
+
+</body>
+</html>
