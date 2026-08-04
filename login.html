@@ -39,7 +39,8 @@
                     <h1>BBIPL CMS</h1>
                 </div>
 
-                <h2>Welcome Back 👋</h2>
+                <h2>Welcome to BBIPL
+                  </h2>
                 <p>Sign in to access your content management dashboard and tools.</p>
 
                 <!-- Step 1: Email Form -->
@@ -113,13 +114,6 @@
                     <button type="submit" class="login-btn">Login</button>
                 </form>
 
-                <div class="divider"><span>OR</span></div>
-
-                <div class="social-login">
-                    <button><i class="fa-brands fa-google"></i> Google</button>
-                    <button><i class="fa-brands fa-microsoft"></i> Microsoft</button>
-                </div>
-
                 <p class="signup-text">Don't have an account? <a href="#" id="showRegisterBtn">Create Account</a></p>
 
             </div>
@@ -160,9 +154,46 @@
                                 <input type="password" id="regConfirmPassword" placeholder="Confirm your password" required>
                             </div>
                         </div>
-                        <button type="submit" class="login-btn register-btn">Create Account</button>
+                        <button type="submit" class="login-btn register-btn" id="registerSubmitBtn">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Send OTP & Create Account</span>
+                        </button>
+                        <p class="login-text" style="font-size:12px;color:#9ca3af;margin-top:8px;">We'll send a verification OTP to your email</p>
                         <p class="login-text">Already have an account? <a href="#" id="gotoLoginBtn">Sign In</a></p>
                     </form>
+
+                    <!-- Registration OTP Verification Section -->
+                    <div id="regOtpSection" class="otp-section" style="display:none;">
+                        <hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0;">
+                        <div class="otp-header">
+                            <button id="regBackToFormBtn" class="otp-back-btn" title="Back to form">
+                                <i class="fa-solid fa-arrow-left"></i>
+                            </button>
+                            <div>
+                                <h3 style="font-size:18px;">Verify Your Email</h3>
+                                <p style="font-size:13px;color:#777;margin:0;">An OTP has been sent to <strong id="regOtpEmailDisplay"></strong></p>
+                            </div>
+                        </div>
+<div class="otp-input-group">
+                            <input type="text" class="reg-otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" autofocus>
+                            <input type="text" class="reg-otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                            <input type="text" class="reg-otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                            <input type="text" class="reg-otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                            <input type="text" class="reg-otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                            <input type="text" class="reg-otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                        </div>
+                        <div class="otp-timer">
+                            <span id="regOtpTimerText">Resend OTP in <strong id="regOtpTimerCount">30</strong>s</span>
+                            <button id="regResendOtpBtn" class="resend-otp-btn" style="display:none;">
+                                <i class="fa-solid fa-rotate"></i> Resend OTP
+                            </button>
+                        </div>
+                        <button id="regVerifyOtpBtn" class="login-btn verify-otp-btn" disabled>
+                            <span>Verify & Create Account</span>
+                            <i class="fa-solid fa-spinner fa-spin" style="display:none;"></i>
+                        </button>
+                        <p class="otp-error" id="regOtpErrorMessage" style="margin-top:12px;"></p>
+                    </div>
                 </div>
             </div>
 

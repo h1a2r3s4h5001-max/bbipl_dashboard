@@ -112,86 +112,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /* ==========================
-       NOTIFICATION DISMISS
-    ========================== */
-
-    document.querySelectorAll(".notif-dismiss").forEach(btn => {
-        btn.addEventListener("click", function(e) {
-            e.stopPropagation();
-            const item = this.closest(".notification-item");
-            if (item) {
-                item.style.transition = "all .3s ease";
-                item.style.transform = "translateX(100px)";
-                item.style.opacity = "0";
-                setTimeout(() => {
-                    item.remove();
-                    updateBadgeCount();
-                }, 300);
-            }
-        });
-    });
-
-    /* ==========================
-       MARK ALL AS READ
-    ========================== */
-
-    const markAllRead = document.getElementById("markAllRead");
-    if (markAllRead) {
-        markAllRead.addEventListener("click", function() {
-            document.querySelectorAll("#notificationBody .notification-item.unread").forEach(item => {
-                item.classList.remove("unread");
-            });
-            updateBadgeCount();
-            if (window.showToast) showToast("All notifications marked as read");
-        });
-    }
-
-    const markMessagesRead = document.getElementById("markMessagesRead");
-    if (markMessagesRead) {
-        markMessagesRead.addEventListener("click", function() {
-            document.querySelectorAll("#messagesBody .notification-item.unread").forEach(item => {
-                item.classList.remove("unread");
-            });
-            updateBadgeCount();
-            if (window.showToast) showToast("All messages marked as read");
-        });
-    }
-
-    /* ==========================
-       UPDATE BADGE COUNT
-    ========================== */
-
-    function updateBadgeCount() {
-        const unreadNotifs = document.querySelectorAll("#notificationBody .notification-item.unread").length;
-        const unreadMsgs = document.querySelectorAll("#messagesBody .notification-item.unread").length;
-        const badges = document.querySelectorAll(".badge");
-        if (badges[0]) badges[0].textContent = unreadNotifs;
-        if (badges[1]) badges[1].textContent = unreadMsgs;
-        // Hide badge if zero
-        badges.forEach(b => {
-            if (parseInt(b.textContent) === 0) {
-                b.style.display = "none";
-            } else {
-                b.style.display = "flex";
-            }
-        });
-    }
-
-    /* ==========================
-       CLICK ON NOTIFICATION ITEM TO MARK READ
-    ========================== */
-
-    document.querySelectorAll(".notification-item .notif-content").forEach(content => {
-        content.addEventListener("click", function() {
-            const item = this.closest(".notification-item");
-            if (item) {
-                item.classList.remove("unread");
-                updateBadgeCount();
-            }
-        });
-    });
-
-    /* ==========================
        COUNTER ANIMATION
     ========================== */
 
@@ -227,10 +147,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Get CMS stats from localStorage
-    const media = JSON.parse(localStorage.getItem("cmsMedia") || "[]");
     const users = JSON.parse(localStorage.getItem("cmsUsers") || "[]");
 
-    animateCounter("mediaCount", media.length || 0);
     animateCounter("userCount", users.length || 0);
 
     /* ==========================
@@ -345,24 +263,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 labels: [
 
-
-                    "Media",
-
                     "Users"
-
                 ],
 
                 datasets: [{
 
-                    data: [media.length, users.length],
+                    data: [users.length],
 
                     backgroundColor: [
 
-
-                        "#f59e0b",
-
                         "#3b82f6"
-
                     ],
 
                     borderWidth: 2
@@ -414,17 +324,5 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
     });
-
-    /* ==========================
-       THEME
-    ========================== */
-
-    const savedTheme = localStorage.getItem("theme");
-
-    if (savedTheme === "dark") {
-
-        document.body.classList.add("dark");
-
-    }
 
 });

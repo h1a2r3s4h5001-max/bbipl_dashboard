@@ -1,4 +1,4 @@
-o/* ==========================================================
+/* ==========================================================
    BBIPL CMS - SMTP Email Server + Notification System
    Handles sending OTP emails via Gmail SMTP (App Password)
    and server-backed notifications
@@ -691,7 +691,7 @@ app.listen(PORT, () => {
     console.log(`  API: http://localhost:${PORT}/api`);
     console.log("============================================");
 
-    const config = loadConfig();
+         const config = loadConfig();
     if (config && config.email) {
         console.log(`  SMTP configured for ${config.email}`);
     } else {

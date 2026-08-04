@@ -36,23 +36,229 @@ document.addEventListener("DOMContentLoaded", () => {
     const togglePassword = document.querySelector(".togglePassword");
     const passwordInput = document.getElementById("password");
 
+    // Registration OTP DOM elements
+    const regOtpSection = document.getElementById("regOtpSection");
+    const regOtpInputs = document.querySelectorAll(".reg-otp-input");
+    const regVerifyOtpBtn = document.getElementById("regVerifyOtpBtn");
+    const regOtpErrorMessage = document.getElementById("regOtpErrorMessage");
+    const regOtpTimerText = document.getElementById("regOtpTimerText");
+    const regOtpTimerCount = document.getElementById("regOtpTimerCount");
+    const regResendOtpBtn = document.getElementById("regResendOtpBtn");
+    const regBackToFormBtn = document.getElementById("regBackToFormBtn");
+    const regOtpEmailDisplay = document.getElementById("regOtpEmailDisplay");
+    const registerSubmitBtn = document.getElementById("registerSubmitBtn");
+
+    /* ==========================================
+       SHARED OTP UTILITY OBJECT
+    ========================================== */
+
+    const OTP = {
+
+        generate() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        },
+
+        isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        },
+
+        maskEmail(email) {
+            const parts = email.split("@");
+            if (parts.length !== 2) return email;
+            const name = parts[0];
+            const domain = parts[1];
+            const maskedName = name.length > 3
+                ? name.substring(0, 3) + "***"
+                : name.substring(0, 1) + "***";
+            return maskedName + "@" + domain;
+        },
+
+        bindInputs(inputs, onComplete, verifyBtn) {
+            inputs.forEach((input, index) => {
+                input.addEventListener("input", (e) => {
+                    const value = e.target.value;
+                    if (value.length > 1) {
+                        e.target.value = value.slice(-1);
+                    }
+                    if (e.target.value) {
+                        input.classList.add("filled");
+                        input.classList.remove("error");
+                    } else {
+                        input.classList.remove("filled");
+                    }
+                    if (e.target.value && index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                    onComplete();
+                });
+
+                input.addEventListener("keydown", (e) => {
+                    if (e.key === "Backspace" && !e.target.value && index > 0) {
+                        inputs[index - 1].focus();
+                        inputs[index - 1].value = "";
+                        inputs[index - 1].classList.remove("filled");
+                        onComplete();
+                    }
+                    if (e.key === "ArrowLeft" && index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                    if (e.key === "ArrowRight" && index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                    if (e.key === "Enter") {
+                        const allFilled = Array.from(inputs).every(inp => inp.value !== "");
+                        if (allFilled && verifyBtn && !verifyBtn.disabled) {
+                            verifyBtn.click();
+                        }
+                    }
+                });
+
+                input.addEventListener("paste", (e) => {
+                    e.preventDefault();
+                    const pasteData = (e.clipboardData || window.clipboardData).getData("text");
+                    const digits = pasteData.replace(/\D/g, "").substring(0, inputs.length);
+                    if (digits) {
+                        inputs.forEach((inp, i) => {
+                            if (i < digits.length) {
+                                inp.value = digits[i];
+                                inp.classList.add("filled");
+                                inp.classList.remove("error");
+                            } else {
+                                inp.value = "";
+                                inp.classList.remove("filled");
+                            }
+                        });
+                        const nextEmpty = inputs.length > digits.length
+                            ? inputs[digits.length]
+                            : inputs[inputs.length - 1];
+                        nextEmpty.focus();
+                        onComplete();
+                    }
+                });
+
+                input.addEventListener("click", () => {
+                    input.select();
+                });
+            });
+        },
+
+        isComplete(inputs) {
+            return Array.from(inputs).every(input => input.value !== "");
+        },
+
+        getValue(inputs) {
+            return Array.from(inputs).map(input => input.value).join("");
+        },
+
+        shake(inputs) {
+            inputs.forEach(input => {
+                input.classList.add("error");
+                setTimeout(() => {
+                    input.classList.remove("error");
+                }, 500);
+            });
+        },
+
+        clearInputs(inputs) {
+            inputs.forEach(input => {
+                input.value = "";
+                input.classList.remove("filled", "error", "success");
+            });
+        },
+
+        showError(el, message) {
+            el.textContent = message;
+            el.style.color = "#ef4444";
+        },
+
+        showSuccess(el, message) {
+            el.textContent = message;
+            el.style.color = "#22c55e";
+        },
+
+        markSuccess(inputs) {
+            inputs.forEach(input => {
+                input.classList.remove("error");
+                input.classList.add("success");
+            });
+        },
+
+        markError(inputs) {
+            inputs.forEach(input => {
+                input.classList.remove("success", "filled");
+                input.classList.add("error");
+            });
+        },
+
+        startTimer(timerTextEl, timerCountEl, resendBtnEl, duration = 30) {
+            let remaining = duration;
+            timerCountEl.textContent = remaining;
+            timerTextEl.style.display = "block";
+            resendBtnEl.style.display = "none";
+
+            const interval = setInterval(() => {
+                remaining--;
+                timerCountEl.textContent = remaining;
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    timerTextEl.style.display = "none";
+                    resendBtnEl.style.display = "inline-block";
+                }
+            }, 1000);
+
+            return () => clearInterval(interval);
+        },
+
+        async sendOTPEmail(email, otp) {
+            try {
+                if (window.EmailService && typeof window.EmailService.sendOTP === "function") {
+                    const result = await EmailService.sendOTP(email, otp);
+                    return result.success;
+                }
+            } catch (err) {
+                console.error("[OTP] Error sending email:", err);
+            }
+            return false;
+        },
+
+        logDemoOTP(email, otp, context = "DEMO") {
+            console.log(
+                "[OTP] " + context + " - Email: " + email + " | OTP: " + otp
+            );
+            if (window.showToast) {
+                window.showToast("📧 " + context + ": OTP " + otp + " (check console)", "warning");
+            }
+        }
+    };
+
     /* ==========================================
        STATE
     ========================================== */
 
     let currentOTP = null;
-    let otpTimer = null;
-    let otpTimerValue = 30;
+    let otpTimerCleanup = null;
     let isVerified = false;
     let pendingEmail = "";
 
+    let regCurrentOTP = null;
+    let regOtpTimerCleanup = null;
+    let regIsVerified = false;
+    let regPendingData = {};
+
     /* ==========================================
-       GENERATE OTP
+       BIND OTP INPUT EVENTS
     ========================================== */
 
-    function generateOTP() {
-        return Math.floor(100000 + Math.random() * 900000).toString();
+    function checkLoginOTPComplete() {
+        verifyOtpBtn.disabled = !OTP.isComplete(otpInputs) || isVerified;
     }
+
+    function checkRegOTPComplete() {
+        regVerifyOtpBtn.disabled = !OTP.isComplete(regOtpInputs) || regIsVerified;
+    }
+
+    OTP.bindInputs(otpInputs, checkLoginOTPComplete, verifyOtpBtn);
+    OTP.bindInputs(regOtpInputs, checkRegOTPComplete, regVerifyOtpBtn);
 
     /* ==========================================
        EMAIL FORM SUBMIT - SEND OTP
@@ -63,49 +269,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const email = emailInput.value.trim();
 
-        if (!email || !isValidEmail(email)) {
-            showError("Please enter a valid email address");
+        if (!email || !OTP.isValidEmail(email)) {
+            OTP.showError(otpErrorMessage, "Please enter a valid email address");
             return;
         }
 
-        // Disable button and show loading
         sendOtpBtn.disabled = true;
         sendOtpBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Sending...</span>';
 
-        // Generate OTP
-        currentOTP = generateOTP();
+        currentOTP = OTP.generate();
         pendingEmail = email;
+        console.log("[LOGIN] Generated OTP for " + email + ": " + currentOTP);
 
-        console.log(`[LOGIN] Generated OTP for ${email}: ${currentOTP}`);
-
-        try {
-            // Try to send OTP via EmailService (SMTP server)
-            if (window.EmailService && typeof window.EmailService.sendOTP === "function") {
-                const result = await EmailService.sendOTP(email, currentOTP);
-
-                if (result.success) {
-                    // Show OTP section
-                    showOTPSection(email);
-                } else {
-                    // Fallback: show OTP in demo mode anyway
-                    console.warn("[LOGIN] Email send reported failure, but showing OTP section:", result.message);
-                    showOTPSection(email);
-                }
-            } else {
-                // EmailService not loaded, show demo mode
-                console.warn("[LOGIN] EmailService not available, using demo mode");
-                showDemoOTP(email);
-                showOTPSection(email);
-            }
-        } catch (err) {
-            console.error("[LOGIN] Error sending OTP:", err);
-            // Still show OTP section as fallback
-            showDemoOTP(email);
-            showOTPSection(email);
-        } finally {
-            sendOtpBtn.disabled = false;
-            sendOtpBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> <span>Send OTP</span>';
+        const sent = await OTP.sendOTPEmail(email, currentOTP);
+        if (!sent) {
+            OTP.logDemoOTP(email, currentOTP, "LOGIN DEMO");
         }
+
+        showOTPSection(email);
+
+        sendOtpBtn.disabled = false;
+        sendOtpBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> <span>Send OTP</span>';
     });
 
     /* ==========================================
@@ -113,216 +297,50 @@ document.addEventListener("DOMContentLoaded", () => {
     ========================================== */
 
     function showOTPSection(email) {
-        // Hide email form, show OTP section
         emailForm.style.display = "none";
         otpSection.style.display = "block";
-        otpEmailDisplay.textContent = maskEmail(email);
+        otpEmailDisplay.textContent = OTP.maskEmail(email);
 
-        // Clear any previous OTP inputs
-        otpInputs.forEach(input => {
-            input.value = "";
-            input.classList.remove("filled", "error", "success");
-        });
+        OTP.clearInputs(otpInputs);
 
-        // Focus first OTP input
         setTimeout(() => {
-            otpInputs[0].focus();
+            if (otpInputs[0]) otpInputs[0].focus();
         }, 100);
 
-        // Start OTP timer
-        startOtpTimer();
+        if (otpTimerCleanup) otpTimerCleanup();
+        otpTimerCleanup = OTP.startTimer(otpTimerText, otpTimerCount, resendOtpBtn);
 
-        // Reset verification state
         isVerified = false;
         verifyOtpBtn.disabled = true;
         otpErrorMessage.textContent = "";
     }
 
     /* ==========================================
-       DEMO OTP DISPLAY
-    ========================================== */
-
-    function showDemoOTP(email) {
-        console.log(
-            `%c╔══════════════════════════════════════════╗\n` +
-            `║   📧 DEMO MODE - OTP Generated         ║\n` +
-            `╠══════════════════════════════════════════╣\n` +
-            `║ Email: ${email.padEnd(35)}║\n` +
-            `║ OTP:   ${currentOTP.padEnd(35)}║\n` +
-            `╚══════════════════════════════════════════╝`,
-            "color:#4f46e5;font-weight:bold;font-size:12px;"
-        );
-
-        if (window.showToast) {
-            window.showToast(`📧 Demo: OTP ${currentOTP} (check console)`, "success");
-        }
-    }
-
-    /* ==========================================
-       HELPER FUNCTIONS
-    ========================================== */
-
-    function isValidEmail(email) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    }
-
-    function maskEmail(email) {
-        const parts = email.split("@");
-        if (parts.length !== 2) return email;
-        const name = parts[0];
-        const domain = parts[1];
-        const maskedName = name.length > 3
-            ? name.substring(0, 3) + "***"
-            : name.substring(0, 1) + "***";
-        return maskedName + "@" + domain;
-    }
-
-    function showError(message) {
-        otpErrorMessage.textContent = message;
-        otpErrorMessage.style.color = "#ef4444";
-    }
-
-    function showSuccess(message) {
-        otpErrorMessage.textContent = message;
-        otpErrorMessage.style.color = "#22c55e";
-    }
-
-    /* ==========================================
-       OTP INPUT HANDLING
-    ========================================== */
-
-    // Auto-advance to next input on typing
-    otpInputs.forEach((input, index) => {
-        input.addEventListener("input", (e) => {
-            const value = e.target.value;
-
-            // Only allow single digit
-            if (value.length > 1) {
-                e.target.value = value.slice(-1);
-            }
-
-            // Mark as filled if has value
-            if (e.target.value) {
-                input.classList.add("filled");
-                input.classList.remove("error");
-            } else {
-                input.classList.remove("filled");
-            }
-
-            // Auto-advance to next input
-            if (e.target.value && index < otpInputs.length - 1) {
-                otpInputs[index + 1].focus();
-            }
-
-            // Check if all inputs filled
-            checkOTPComplete();
-        });
-
-        // Handle backspace to go to previous input
-        input.addEventListener("keydown", (e) => {
-            if (e.key === "Backspace" && !e.target.value && index > 0) {
-                otpInputs[index - 1].focus();
-                otpInputs[index - 1].value = "";
-                otpInputs[index - 1].classList.remove("filled");
-                checkOTPComplete();
-            }
-
-            // Handle arrow keys
-            if (e.key === "ArrowLeft" && index > 0) {
-                otpInputs[index - 1].focus();
-            }
-            if (e.key === "ArrowRight" && index < otpInputs.length - 1) {
-                otpInputs[index + 1].focus();
-            }
-        });
-
-        // Handle paste
-        input.addEventListener("paste", (e) => {
-            e.preventDefault();
-            const pasteData = (e.clipboardData || window.clipboardData).getData("text");
-            const digits = pasteData.replace(/\D/g, "").substring(0, otpInputs.length);
-
-            if (digits) {
-                otpInputs.forEach((inp, i) => {
-                    if (i < digits.length) {
-                        inp.value = digits[i];
-                        inp.classList.add("filled");
-                        inp.classList.remove("error");
-                    } else {
-                        inp.value = "";
-                        inp.classList.remove("filled");
-                    }
-                });
-
-                // Focus the next empty input or last input
-                const nextEmpty = otpInputs.length > digits.length
-                    ? otpInputs[digits.length]
-                    : otpInputs[otpInputs.length - 1];
-                nextEmpty.focus();
-
-                checkOTPComplete();
-            }
-        });
-
-        // Focus on click
-        input.addEventListener("click", () => {
-            input.select();
-        });
-    });
-
-    /* ==========================================
-       CHECK OTP COMPLETE
-    ========================================== */
-
-    function checkOTPComplete() {
-        const allFilled = Array.from(otpInputs).every(input => input.value !== "");
-        verifyOtpBtn.disabled = !allFilled || isVerified;
-    }
-
-    /* ==========================================
-       GET OTP FROM INPUTS
-    ========================================== */
-
-    function getOTPFromInputs() {
-        return Array.from(otpInputs).map(input => input.value).join("");
-    }
-
-    /* ==========================================
-       VERIFY OTP
+       VERIFY OTP - LOGIN
     ========================================== */
 
     verifyOtpBtn.addEventListener("click", async () => {
-        const enteredOTP = getOTPFromInputs();
+        const enteredOTP = OTP.getValue(otpInputs);
 
         if (enteredOTP.length !== 6) {
-            showError("Please enter the complete 6-digit OTP");
-            shakeOTPInputs();
+            OTP.showError(otpErrorMessage, "Please enter the complete 6-digit OTP");
+            OTP.shake(otpInputs);
             return;
         }
 
-        // Show loading
         verifyOtpBtn.disabled = true;
         verifyOtpBtn.innerHTML = '<span>Verifying...</span> <i class="fa-solid fa-spinner fa-spin"></i>';
 
-        // Simulate a small delay for UX
         await new Promise(resolve => setTimeout(resolve, 500));
 
         if (enteredOTP === currentOTP) {
-            // OTP Verified!
             isVerified = true;
-            otpInputs.forEach(input => {
-                input.classList.remove("error");
-                input.classList.add("success");
-            });
-            showSuccess("✅ OTP Verified! Logging in...");
-
-            // Update verify button
+            OTP.markSuccess(otpInputs);
+            OTP.showSuccess(otpErrorMessage, "✅ OTP Verified! Logging in...");
             verifyOtpBtn.innerHTML = '<span>✓ Verified! Redirecting...</span>';
 
-            // Store login state
             localStorage.setItem("isLoggedIn", "true");
 
-            // Store user email
             const userData = {
                 email: pendingEmail,
                 name: pendingEmail.split("@")[0],
@@ -332,119 +350,52 @@ document.addEventListener("DOMContentLoaded", () => {
             };
             localStorage.setItem("cmsUser", JSON.stringify(userData));
 
-            // Show success toast if available
             if (window.showToast) {
                 window.showToast("✅ Login successful! Welcome to BBIPL CMS", "success");
             }
 
-            // Redirect to dashboard
             setTimeout(() => {
                 window.location.href = "index.html";
             }, 1000);
 
         } else {
-            // Wrong OTP
-            showError("❌ Invalid OTP. Please try again.");
-            shakeOTPInputs();
-            otpInputs.forEach(input => {
-                input.classList.remove("success", "filled");
-                input.classList.add("error");
-            });
+            OTP.showError(otpErrorMessage, "❌ Invalid OTP. Please try again.");
+            OTP.shake(otpInputs);
+            OTP.markError(otpInputs);
             verifyOtpBtn.disabled = false;
             verifyOtpBtn.innerHTML = '<span>Verify & Login</span> <i class="fa-solid fa-spinner fa-spin" style="display:none;"></i>';
         }
     });
 
     /* ==========================================
-       SHAKE OTP INPUTS ON ERROR
-    ========================================== */
-
-    function shakeOTPInputs() {
-        otpInputs.forEach(input => {
-            input.classList.add("error");
-            setTimeout(() => {
-                input.classList.remove("error");
-            }, 500);
-        });
-    }
-
-    /* ==========================================
-       OTP TIMER
-    ========================================== */
-
-    function startOtpTimer() {
-        // Clear existing timer
-        if (otpTimer) {
-            clearInterval(otpTimer);
-        }
-
-        otpTimerValue = 30;
-        otpTimerCount.textContent = otpTimerValue;
-        otpTimerText.style.display = "block";
-        resendOtpBtn.style.display = "none";
-
-        otpTimer = setInterval(() => {
-            otpTimerValue--;
-            otpTimerCount.textContent = otpTimerValue;
-
-            if (otpTimerValue <= 0) {
-                clearInterval(otpTimer);
-                otpTimer = null;
-                otpTimerText.style.display = "none";
-                resendOtpBtn.style.display = "inline-block";
-            }
-        }, 1000);
-    }
-
-    /* ==========================================
-       RESEND OTP
+       RESEND OTP - LOGIN
     ========================================== */
 
     resendOtpBtn.addEventListener("click", async () => {
         if (!pendingEmail) return;
 
-        // Generate new OTP
-        currentOTP = generateOTP();
-        console.log(`[LOGIN] Resending OTP for ${pendingEmail}: ${currentOTP}`);
+        currentOTP = OTP.generate();
+        console.log("[LOGIN] Resending OTP for " + pendingEmail + ": " + currentOTP);
 
-        // Disable resend button temporarily
         resendOtpBtn.disabled = true;
         resendOtpBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
 
-        try {
-            if (window.EmailService && typeof window.EmailService.sendOTP === "function") {
-                const result = await EmailService.sendOTP(pendingEmail, currentOTP);
-                if (!result.success) {
-                    console.warn("[LOGIN] Resend reported failure, but proceeding");
-                }
-            } else {
-                showDemoOTP(pendingEmail);
-            }
-        } catch (err) {
-            console.error("[LOGIN] Error resending OTP:", err);
-            showDemoOTP(pendingEmail);
+        const sent = await OTP.sendOTPEmail(pendingEmail, currentOTP);
+        if (!sent) {
+            OTP.logDemoOTP(pendingEmail, currentOTP, "LOGIN DEMO");
         }
 
-        // Clear OTP inputs
-        otpInputs.forEach(input => {
-            input.value = "";
-            input.classList.remove("filled", "error", "success");
-        });
-
-        // Reset state
+        OTP.clearInputs(otpInputs);
         isVerified = false;
         verifyOtpBtn.disabled = true;
         otpErrorMessage.textContent = "";
 
-        // Restart timer
-        startOtpTimer();
+        if (otpTimerCleanup) otpTimerCleanup();
+        otpTimerCleanup = OTP.startTimer(otpTimerText, otpTimerCount, resendOtpBtn);
 
-        // Re-enable resend button (it will be hidden by timer)
         resendOtpBtn.disabled = false;
         resendOtpBtn.innerHTML = '<i class="fa-solid fa-rotate"></i> Resend OTP';
-
-        // Focus first input
-        otpInputs[0].focus();
+        if (otpInputs[0]) otpInputs[0].focus();
 
         if (window.showToast) {
             window.showToast("🔄 New OTP sent to your email", "success");
@@ -456,23 +407,12 @@ document.addEventListener("DOMContentLoaded", () => {
     ========================================== */
 
     backToEmailBtn.addEventListener("click", () => {
-        // Clear timer
-        if (otpTimer) {
-            clearInterval(otpTimer);
-            otpTimer = null;
-        }
+        if (otpTimerCleanup) otpTimerCleanup();
 
-        // Hide OTP section, show email form
         otpSection.style.display = "none";
         emailForm.style.display = "block";
 
-        // Reset OTP inputs
-        otpInputs.forEach(input => {
-            input.value = "";
-            input.classList.remove("filled", "error", "success");
-        });
-
-        // Reset state
+        OTP.clearInputs(otpInputs);
         isVerified = false;
         verifyOtpBtn.disabled = true;
         otpErrorMessage.textContent = "";
@@ -513,7 +453,6 @@ document.addEventListener("DOMContentLoaded", () => {
        REGISTER MODAL
     ========================================== */
 
-    // Show register modal
     if (showRegisterBtn) {
         showRegisterBtn.addEventListener("click", (e) => {
             e.preventDefault();
@@ -522,7 +461,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Close register modal
     if (closeRegisterBtn) {
         closeRegisterBtn.addEventListener("click", () => {
             registerModal.classList.remove("show");
@@ -530,7 +468,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Close modal when clicking overlay
     if (registerModal) {
         registerModal.addEventListener("click", (e) => {
             if (e.target === registerModal) {
@@ -540,7 +477,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Go to login from register
     if (gotoLoginBtn) {
         gotoLoginBtn.addEventListener("click", (e) => {
             e.preventDefault();
@@ -549,9 +485,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Handle registration
+    /* ==========================================
+       REGISTRATION - SEND OTP
+    ========================================== */
+
     if (registerForm) {
-        registerForm.addEventListener("submit", (e) => {
+        registerForm.addEventListener("submit", async (e) => {
             e.preventDefault();
 
             const name = document.getElementById("regName").value.trim();
@@ -560,48 +499,186 @@ document.addEventListener("DOMContentLoaded", () => {
             const confirmPassword = document.getElementById("regConfirmPassword").value;
 
             if (!name || !email || !password || !confirmPassword) {
-                alert("Please fill in all fields");
+                const msg = "Please fill in all fields";
+                if (window.showToast) window.showToast(msg, "error");
+                else alert(msg);
                 return;
             }
 
             if (password !== confirmPassword) {
-                alert("Passwords do not match");
+                const msg = "Passwords do not match";
+                if (window.showToast) window.showToast(msg, "error");
+                else alert(msg);
                 return;
             }
 
             if (password.length < 6) {
-                alert("Password must be at least 6 characters");
+                const msg = "Password must be at least 6 characters";
+                if (window.showToast) window.showToast(msg, "error");
+                else alert(msg);
                 return;
             }
 
-            // Save user to localStorage
-            const users = JSON.parse(localStorage.getItem("cmsUsers") || "[]");
-            const newUser = {
-                id: "user_" + Date.now(),
-                name: name,
-                email: email,
-                password: password,
-                role: "Editor",
-                image: "images/profile.png",
-                createdAt: new Date().toISOString()
-            };
-            users.push(newUser);
-            localStorage.setItem("cmsUsers", JSON.stringify(users));
+            regPendingData = { name, email, password };
 
-            // Auto-fill email on login form
-            emailInput.value = email;
+            regCurrentOTP = OTP.generate();
+            console.log("[REG] Generated OTP for " + email + ": " + regCurrentOTP);
 
-            // Close modal
-            registerModal.classList.remove("show");
-            document.body.style.overflow = "";
+            registerSubmitBtn.disabled = true;
+            registerSubmitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Sending OTP...</span>';
 
-            if (window.showToast) {
-                window.showToast("✅ Account created! Enter your email to receive OTP", "success");
-            } else {
-                alert("Account created! Please login with your email.");
+            const sent = await OTP.sendOTPEmail(email, regCurrentOTP);
+            if (!sent) {
+                OTP.logDemoOTP(email, regCurrentOTP, "REGISTRATION DEMO");
             }
 
-            registerForm.reset();
+            showRegOtpSection(email);
+
+            registerSubmitBtn.disabled = false;
+            registerSubmitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> <span>Send OTP & Create Account</span>';
+        });
+    }
+
+    function showRegOtpSection(email) {
+        registerForm.style.display = "none";
+        regOtpSection.style.display = "block";
+        regOtpEmailDisplay.textContent = OTP.maskEmail(email);
+
+        OTP.clearInputs(regOtpInputs);
+
+        setTimeout(() => {
+            if (regOtpInputs[0]) regOtpInputs[0].focus();
+        }, 100);
+
+        if (regOtpTimerCleanup) regOtpTimerCleanup();
+        regOtpTimerCleanup = OTP.startTimer(regOtpTimerText, regOtpTimerCount, regResendOtpBtn);
+
+        regIsVerified = false;
+        regVerifyOtpBtn.disabled = true;
+        regOtpErrorMessage.textContent = "";
+    }
+
+    /* ==========================================
+       REGISTRATION - VERIFY OTP
+    ========================================== */
+
+    if (regVerifyOtpBtn) {
+        regVerifyOtpBtn.addEventListener("click", async () => {
+            const enteredOTP = OTP.getValue(regOtpInputs);
+
+            if (enteredOTP.length !== 6) {
+                OTP.showError(regOtpErrorMessage, "Please enter the complete 6-digit OTP");
+                OTP.shake(regOtpInputs);
+                return;
+            }
+
+            regVerifyOtpBtn.disabled = true;
+            regVerifyOtpBtn.innerHTML = '<span>Verifying...</span> <i class="fa-solid fa-spinner fa-spin"></i>';
+
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            if (enteredOTP === regCurrentOTP) {
+                regIsVerified = true;
+                OTP.markSuccess(regOtpInputs);
+                OTP.showSuccess(regOtpErrorMessage, "✅ OTP Verified! Creating your account...");
+                regVerifyOtpBtn.innerHTML = '<span>✓ Verified! Creating Account...</span>';
+
+                const { name, email, password } = regPendingData;
+                const users = JSON.parse(localStorage.getItem("cmsUsers") || "[]");
+                const newUser = {
+                    id: "user_" + Date.now(),
+                    name: name,
+                    email: email,
+                    password: password,
+                    role: "Editor",
+                    image: "images/profile.png",
+                    createdAt: new Date().toISOString()
+                };
+                users.push(newUser);
+                localStorage.setItem("cmsUsers", JSON.stringify(users));
+
+                emailInput.value = email;
+
+                setTimeout(() => {
+                    registerModal.classList.remove("show");
+                    document.body.style.overflow = "";
+
+                    registerForm.style.display = "block";
+                    regOtpSection.style.display = "none";
+                    registerForm.reset();
+                    OTP.clearInputs(regOtpInputs);
+
+                    if (window.showToast) {
+                        window.showToast("✅ Account created! Enter your email to receive OTP", "success");
+                    } else {
+                        alert("Account created! Please login with your email.");
+                    }
+                }, 1200);
+
+            } else {
+                OTP.showError(regOtpErrorMessage, "❌ Invalid OTP. Please try again.");
+                OTP.shake(regOtpInputs);
+                OTP.markError(regOtpInputs);
+                regVerifyOtpBtn.disabled = false;
+                regVerifyOtpBtn.innerHTML = '<span>Verify & Create Account</span> <i class="fa-solid fa-spinner fa-spin" style="display:none;"></i>';
+            }
+        });
+    }
+
+    /* ==========================================
+       REGISTRATION - RESEND OTP
+    ========================================== */
+
+    if (regResendOtpBtn) {
+        regResendOtpBtn.addEventListener("click", async () => {
+            const email = regPendingData.email;
+            if (!email) return;
+
+            regCurrentOTP = OTP.generate();
+            console.log("[REG] Resending OTP for " + email + ": " + regCurrentOTP);
+
+            regResendOtpBtn.disabled = true;
+            regResendOtpBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+
+            const sent = await OTP.sendOTPEmail(email, regCurrentOTP);
+            if (!sent) {
+                OTP.logDemoOTP(email, regCurrentOTP, "REGISTRATION DEMO");
+            }
+
+            OTP.clearInputs(regOtpInputs);
+            regIsVerified = false;
+            regVerifyOtpBtn.disabled = true;
+            regOtpErrorMessage.textContent = "";
+
+            if (regOtpTimerCleanup) regOtpTimerCleanup();
+            regOtpTimerCleanup = OTP.startTimer(regOtpTimerText, regOtpTimerCount, regResendOtpBtn);
+
+            regResendOtpBtn.disabled = false;
+            regResendOtpBtn.innerHTML = '<i class="fa-solid fa-rotate"></i> Resend OTP';
+            if (regOtpInputs[0]) regOtpInputs[0].focus();
+
+            if (window.showToast) {
+                window.showToast("🔄 New OTP sent to your email", "success");
+            }
+        });
+    }
+
+    /* ==========================================
+       REGISTRATION - BACK TO FORM
+    ========================================== */
+
+    if (regBackToFormBtn) {
+        regBackToFormBtn.addEventListener("click", () => {
+            if (regOtpTimerCleanup) regOtpTimerCleanup();
+
+            regOtpSection.style.display = "none";
+            registerForm.style.display = "block";
+
+            OTP.clearInputs(regOtpInputs);
+            regIsVerified = false;
+            regVerifyOtpBtn.disabled = true;
+            regOtpErrorMessage.textContent = "";
+            regCurrentOTP = null;
         });
     }
 
@@ -623,24 +700,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 setTimeout(typeWriter, 40);
             }
         }
-        // Start typewriter after page loads
         setTimeout(typeWriter, 600);
     }
-
-    /* ==========================================
-       ENTER KEY FOR OTP SUBMIT
-    ========================================== */
-
-    otpInputs.forEach((input, index) => {
-        input.addEventListener("keydown", (e) => {
-            if (e.key === "Enter") {
-                const allFilled = Array.from(otpInputs).every(inp => inp.value !== "");
-                if (allFilled && !verifyOtpBtn.disabled) {
-                    verifyOtpBtn.click();
-                }
-            }
-        });
-    });
 
     /* ==========================================
        AUTO-FOCUS EMAIL INPUT ON PAGE LOAD
@@ -653,6 +714,5 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     console.log("%c[LOGIN] ✅ Login system initialized with OTP + SMTP", "color:#22c55e;font-weight:bold;font-size:14px;");
-    console.log("%c[LOGIN] ℹ️  SMTP server configured for email delivery", "color:#4f46e5;font-weight:bold;");
 
 });

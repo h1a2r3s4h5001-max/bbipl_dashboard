@@ -1,4 +1,4 @@
-/* ==========================================================
+ /* ==========================================================
    BBIPL Central Management System
    email.js - SMTP Email Service (Local Node.js Server)
 ========================================================== */
@@ -121,10 +121,8 @@ const EmailService = {
     async sendEmail(params) {
         const settings = this.getSmtpSettings();
 
-        // Check if SMTP server is reachable and configured
-        // If the server is configured (has Gmail creds), use it even if localStorage says demo
+        // Step 1: Check if the backend SMTP server is reachable and configured
         if (!this._serverConfigured) {
-            // Try to check server status dynamically
             try {
                 const resp = await fetch(`${this.SMTP_SERVER_URL}/api/status`);
                 const statusData = await resp.json();
@@ -134,43 +132,24 @@ const EmailService = {
             }
         }
 
-        // If server is configured on backend, send real email regardless of localStorage settings
+        // Step 2: Attempt to send via the backend SMTP server if configured
         if (this._serverConfigured) {
-            try {
-                const response = await fetch(`${this.SMTP_SERVER_URL}/api/send-otp`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        email: params.to,
-                        otp: params.otp
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    console.log(`%c[SMTP] ✅ OTP sent successfully to ${params.to}`, "color:#22c55e;font-weight:bold;");
-                    if (window.showToast) {
-                        showToast(`✅ OTP sent to ${params.to}`, "success");
-                    }
-                    return { success: true, message: `OTP sent to ${params.to}` };
-                } else if (data.setupRequired) {
-                    console.warn("[SMTP] Server needs configuration");
-                    return this.sendDemoEmail(params, "SMTP server not configured");
-                } else {
-                    throw new Error(data.message || "Unknown error");
-                }
-            } catch (error) {
-                console.error("[SMTP] Failed to send:", error.message);
-                return this.sendDemoEmail(params, error.message);
-            }
+            return this._sendViaServer(params);
         }
 
-        // Fallback: use localStorage settings
+        // Step 3: Fallback — use localStorage settings or demo mode
         if (settings.testMode || !settings.enabled) {
             return this.sendDemoEmail(params);
         }
 
+        // Step 4: Attempt server send as last resort (if localStorage says enabled but server status unknown)
+        return this._sendViaServer(params);
+    },
+
+    /**
+     * Send email via the local SMTP server (single call site — eliminates duplicate code)
+     */
+    async _sendViaServer(params) {
         try {
             const response = await fetch(`${this.SMTP_SERVER_URL}/api/send-otp`, {
                 method: "POST",
@@ -184,17 +163,21 @@ const EmailService = {
             const data = await response.json();
 
             if (data.success) {
-                console.log(`%c[SMTP] OTP sent successfully to ${params.to}`, "color:#22c55e;font-weight:bold;");
+                console.log(`%c[SMTP] ✅ OTP sent successfully to ${params.to}`, "color:#22c55e;font-weight:bold;");
+                if (window.showToast) {
+                    showToast(`✅ OTP sent to ${params.to}`, "success");
+                }
                 return { success: true, message: `OTP sent to ${params.to}` };
-            } else if (data.setupRequired) {
+            }
+
+            if (data.setupRequired) {
                 console.warn("[SMTP] Server needs configuration");
                 return this.sendDemoEmail(params, "SMTP server not configured");
-            } else {
-                throw new Error(data.message || "Unknown error");
             }
+
+            throw new Error(data.message || "Unknown error");
         } catch (error) {
             console.error("[SMTP] Failed to send:", error.message);
-            // Fallback to demo mode
             return this.sendDemoEmail(params, error.message);
         }
     },

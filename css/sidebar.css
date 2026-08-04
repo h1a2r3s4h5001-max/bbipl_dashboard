@@ -1,4 +1,4 @@
-/* ==========================================================
+ /* ==========================================================
    BBIPL ADMIN DASHBOARD
    sidebar.css
 ========================================================== */
@@ -324,10 +324,6 @@
 .sidebar ul li:nth-child(2){animation-delay:.10s;}
 .sidebar ul li:nth-child(3){animation-delay:.15s;}
 .sidebar ul li:nth-child(4){animation-delay:.20s;}
-.sidebar ul li:nth-child(5){animation-delay:.25s;}
-.sidebar ul li:nth-child(6){animation-delay:.30s;}
-.sidebar ul li:nth-child(7){animation-delay:.35s;}
-.sidebar ul li:nth-child(8){animation-delay:.40s;}
 
 @keyframes menuFade{
 

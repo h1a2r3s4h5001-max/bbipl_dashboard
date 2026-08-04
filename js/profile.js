@@ -1,4 +1,4 @@
-/* ==========================================================
+ /* ==========================================================
    BBIPL Dashboard
    profile.js
 ========================================================== */
@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function loadProfile() {
 
         const user = JSON.parse(
-            localStorage.getItem("bbiplUser")
+            localStorage.getItem("cmsUser")
         );
 
         if (!user) return;
@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         localStorage.setItem(
 
-            "bbiplUser",
+            "cmsUser",
 
             JSON.stringify(user)
 

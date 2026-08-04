@@ -1,0 +1,13 @@
+﻿
+Name               Length LastWriteTime       
+----               ------ -------------       
+node_modules              7/30/2026 5:54:47 PM
+.gitignore         41     7/27/2026 1:59:25 PM
+package-lock.json  31527  7/30/2026 5:54:47 PM
+package.json       361    7/27/2026 1:53:11 PM
+server.js          25175  7/30/2026 4:59:54 PM
+server_listing.txt 0      8/3/2026 11:54:12 AM
+smtp-config.json   87     7/27/2026 3:45:17 PM
+start.bat          502    7/27/2026 1:59:27 PM
+
+
