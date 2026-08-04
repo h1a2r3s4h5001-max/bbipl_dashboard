@@ -1,33 +1,16 @@
-# Hosting Project - Task Tracking
+# TODO - Fix OTP failure when served via Live Server
 
 ## Goal
-Make the BBIPL CMS deployable as a single production server (Option C) and document the full hosting process.
+Make the frontend automatically detect the Node backend (port 3001) when the
+static pages are opened through Live Server (port 5500) so OTP emails are sent
+via the real SMTP server instead of falling back to demo mode.
 
-## Tasks
+## Steps
+- [x] 1. Analyze root cause: `/api/status` hits Live Server (5500) -> 404; backend lives on 3001
+- [x] 2. Get user approval on the plan
+- [x] 3. Add API server URL detection (`_candidateUrls()` + `detectServer()`) in `js/email.js`
+- [x] 4. Rewire `checkServerStatus()` to use the new detection
+- [x] 5. Update `sendEmail()` to probe/detect the backend before sending OTP
+- [x] 6. Update `js/settings.js` "Check Server Status" to use the same detection
+- [x] 7. Start the Node backend (port 3001) and verify `/api/status` returns 200 configured
 
-- [x] Analyzed project structure (frontend static files + Node.js backend)
-- [x] Identified hardcoded `localhost:3001` references in `js/email.js` and `js/settings.js`
-- [x] Modify `server/server.js` to:
-  - [x] Read `PORT` from `process.env.PORT` (fallback 3001)
-  - [x] Serve static files from the project root
-  - [x] Add SPA-style fallback for `.html` pages
-  - [x] Keep all `/api/*` routes intact
-- [x] Modify `js/email.js` to use same-origin / configurable API URL
-- [x] Modify `js/settings.js` to replace hardcoded `localhost:3001`
-- [x] Create `HOSTING-GUIDE.md` with Render / Railway / VPS deployment steps
-- [x] Create `README.md` with project overview, setup, and deploy instructions
-- [x] Verify edited JS files pass syntax check (`node --check`)
-- [x] Test locally by starting server and visiting `http://localhost:3001`
-  - [x] `index.html` served (200)
-  - [x] `settings.html` direct navigation (200)
-  - [x] `/api/status` returns SMTP config (200)
-
-## Summary
-
-The BBIPL CMS is now a **single-server production-ready** application:
-
-- **`server/server.js`** serves the static frontend AND all `/api/*` routes on one port, reads `PORT` from env, and supports direct navigation to `.html` pages.
-- **`js/email.js`** and **`js/settings.js`** no longer hardcode `localhost:3001` — they use the same origin (overridable via `window.CMS_API_URL` or `localStorage.cmsApiUrl`).
-- **`HOSTING-GUIDE.md`** documents deployment to Render, Railway, and a VPS.
-- **`README.md`** provides the full project overview, setup, and deploy instructions.
-</content>

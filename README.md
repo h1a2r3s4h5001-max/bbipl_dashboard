@@ -62,20 +62,20 @@ project/
 - [Node.js](https://nodejs.org) 18 or newer
 - A Gmail account with an **App Password** (for real email delivery)
 
-### 1. Install backend dependencies
+### 1. Install dependencies
 
 ```bash
-cd server
 npm install
 ```
 
 ### 2. Start the server
 
 ```bash
-node server.js
+npm start
 ```
 
-The whole app is served from **http://localhost:3001** — frontend *and* API.
+This runs `node server/server.js`. The whole app is served from
+**http://localhost:3001** — frontend *and* API.
 
 > On Windows you can also double-click `server/start.bat`.
 
@@ -120,10 +120,14 @@ instructions for:
 ### Quick deploy checklist
 
 1. Push the project to GitHub.
-2. Create a web service on Render/Railway (root directory: `server`).
-3. Build: `npm install`, Start: `node server.js`.
+2. Create a web service on Render/Railway (leave root directory empty — the
+   project has a root `package.json`).
+3. Build: `npm install`, Start: `npm start`.
 4. Add env vars: `PORT`, `GMAIL_EMAIL`, `GMAIL_APP_PASSWORD`.
 5. Open your live URL and log in.
+
+> The frontend and API are served together on one port, so no separate
+> backend URL or CORS configuration is needed.
 
 ---
 

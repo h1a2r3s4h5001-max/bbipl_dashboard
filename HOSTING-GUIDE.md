@@ -58,12 +58,13 @@ Open http://localhost:3001 — the app will be served there.
 
 1. Push this project to a GitHub repository.
 2. Go to [render.com](https://render.com) → **New** → **Web Service**.
-3. Connect your repository.
+3. Connect your repository (the project includes a root `package.json`, so
+   Render builds from the repo root automatically — leave **Root Directory** empty).
 4. Set these values:
    - **Name**: `bbipl-cms`
-   - **Root Directory**: `server`
+   - **Root Directory**: *(leave empty)*
    - **Build Command**: `npm install`
-   - **Start Command**: `node server.js`
+   - **Start Command**: `npm start`
    - **Instance Type**: Free
 5. Under **Environment**, add:
    - `PORT = 10000` (Render provides this automatically)
@@ -79,7 +80,7 @@ Open http://localhost:3001 — the app will be served there.
 
 1. Push this project to GitHub.
 2. Go to [railway.app](https://railway.app) → **New Project** → **Deploy from GitHub repo**.
-3. Railway auto-detects the Node app. Set the **Root Directory** to `server`.
+3. Railway auto-detects the Node app (root `package.json`). Start command: `npm start`.
 4. Add variables: `GMAIL_EMAIL` and `GMAIL_APP_PASSWORD`.
 5. Railway assigns a public URL automatically (e.g. `https://bbipl-cms.up.railway.app`).
 

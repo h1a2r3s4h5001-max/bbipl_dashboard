@@ -17,9 +17,11 @@
 
 const EmailService = {
 
-    // API server URL.
+// API server URL.
     // In production the frontend and API are served from the same origin, so we
-    // default to the current page's origin (no more hardcoded localhost:3001).
+    // default to the current page's origin. When the static pages are opened via
+    // Live Server (e.g. port 5500) the Node backend runs on a different port
+    // (3001), so we auto-detect the correct backend URL at runtime.
     // You can override it anytime with:
     //   localStorage.setItem("cmsApiUrl", "https://your-api.example.com");
     SMTP_SERVER_URL: (function () {
@@ -30,6 +32,49 @@ const EmailService = {
         } catch (e) { /* ignore */ }
         return window.location.origin;
     })(),
+
+    // Candidate base URLs to probe for the Node backend (in priority order).
+    _candidateUrls() {
+        const candidates = [];
+        if (window.CMS_API_URL) candidates.push(window.CMS_API_URL.replace(/\/+$/, ""));
+        try {
+            const saved = localStorage.getItem("cmsApiUrl");
+            if (saved) candidates.push(saved.replace(/\/+$/, ""));
+        } catch (e) { /* ignore */ }
+        const origin = window.location.origin;
+        if (origin) candidates.push(origin);
+        // Common local Node backend ports (fallback when served via Live Server).
+        candidates.push("http://localhost:3001");
+        candidates.push("http://127.0.0.1:3001");
+        // De-duplicate while preserving order.
+        return candidates.filter((v, i, arr) => v && arr.indexOf(v) === i);
+    },
+
+    /**
+     * Probe each candidate base URL for a working /api/status endpoint and
+     * return the first one that responds. Returns null if none are reachable.
+     */
+    async detectServer() {
+        const candidates = this._candidateUrls();
+        for (const base of candidates) {
+            try {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 2500);
+                const res = await fetch(`${base}/api/status`, {
+                    signal: controller.signal
+                });
+                clearTimeout(timeout);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && typeof data.configured === "boolean") {
+                        this.SMTP_SERVER_URL = base;
+                        return base;
+                    }
+                }
+            } catch (e) { /* try next candidate */ }
+        }
+        return null;
+    },
 
     // SMTP Settings (stored in localStorage)
     SMTP_KEY: "cmsSmtpSettings",
@@ -48,20 +93,29 @@ const EmailService = {
     ========================================== */
 
     async checkServerStatus() {
-        try {
-            const response = await fetch(`${this.SMTP_SERVER_URL}/api/status`);
-            if (response.ok) {
-                const data = await response.json();
-                if (data.configured) {
-                    console.log(`%c[SMTP] Server connected - ${data.message}`, "color:#22c55e;font-weight:bold;");
-                    this._serverConfigured = true;
-                } else {
-                    console.log(`%c[SMTP] Server online but ${data.message}`, "color:#f59e0b;font-weight:bold;");
-                    this._serverConfigured = false;
+        // If the current origin is not the API server (e.g. Live Server on 5500
+        // while the Node backend runs on 3001), auto-detect the backend URL.
+        const detected = await this.detectServer();
+
+        if (detected) {
+            try {
+                const response = await fetch(`${this.SMTP_SERVER_URL}/api/status`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.configured) {
+                        console.log(`%c[SMTP] Server connected (${this.SMTP_SERVER_URL}) - ${data.message}`, "color:#22c55e;font-weight:bold;");
+                        this._serverConfigured = true;
+                    } else {
+                        console.log(`%c[SMTP] Server online but ${data.message}`, "color:#f59e0b;font-weight:bold;");
+                        this._serverConfigured = false;
+                    }
                 }
+            } catch (e) {
+                console.log("%c[SMTP] Server offline - using demo mode", "color:#6366f1;font-weight:bold;");
+                this._serverConfigured = false;
             }
-        } catch (e) {
-            console.log("%c[SMTP] Server offline - using demo mode", "color:#6366f1;font-weight:bold;");
+        } else {
+            console.log("%c[SMTP] No API server detected (port 3001 offline?) - using demo mode", "color:#6366f1;font-weight:bold;");
             this._serverConfigured = false;
         }
     },
@@ -129,16 +183,23 @@ const EmailService = {
      * @param {string} params.otp - OTP code
      * @returns {Promise<Object>} { success, message }
      */
-    async sendEmail(params) {
+async sendEmail(params) {
         const settings = this.getSmtpSettings();
 
-        // Step 1: Check if the backend SMTP server is reachable and configured
+        // Step 1: Auto-detect the backend server (handles Live Server origin
+        // pointing at the static server while the Node API runs on port 3001).
         if (!this._serverConfigured) {
-            try {
-                const resp = await fetch(`${this.SMTP_SERVER_URL}/api/status`);
-                const statusData = await resp.json();
-                this._serverConfigured = statusData.configured === true;
-            } catch (e) {
+            const detected = await this.detectServer();
+            if (detected) {
+                try {
+                    const resp = await fetch(`${this.SMTP_SERVER_URL}/api/status`);
+                    const statusData = await resp.json();
+                    this._serverConfigured = statusData.configured === true;
+                } catch (e) {
+                    this._serverConfigured = false;
+                }
+            } else {
+                // No backend found — fall back to demo mode.
                 this._serverConfigured = false;
             }
         }

@@ -341,17 +341,21 @@ document.addEventListener("DOMContentLoaded", () => {
             checkSmtpStatusBtn.disabled = true;
             checkSmtpStatusBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking...';
 
-            try {
-                // Same-origin API URL (matches the static server). Overridable via
-                // localStorage "cmsApiUrl" or window.CMS_API_URL if the API is hosted separately.
-                const apiUrl = (function () {
-                    if (window.CMS_API_URL) return window.CMS_API_URL;
+try {
+                // Determine the API URL. When the static pages are opened via
+                // Live Server (port 5500) the Node backend runs on port 3001, so
+                // we auto-detect it through EmailService (same logic as email.js).
+                let apiUrl = window.location.origin;
+                if (window.EmailService && typeof window.EmailService.detectServer === "function") {
+                    const detected = await window.EmailService.detectServer();
+                    if (detected) apiUrl = detected;
+                } else {
+                    if (window.CMS_API_URL) apiUrl = window.CMS_API_URL;
                     try {
                         const saved = localStorage.getItem("cmsApiUrl");
-                        if (saved) return saved.replace(/\/+$/, "");
+                        if (saved) apiUrl = saved.replace(/\/+$/, "");
                     } catch (e) { /* ignore */ }
-                    return window.location.origin;
-                })();
+                }
 
                 const response = await fetch(`${apiUrl}/api/status`);
                 const data = await response.json();

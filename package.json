@@ -1,0 +1,18 @@
+{
+  "name": "bbipl-cms",
+  "version": "2.0.0",
+  "description": "BBIPL Central Management System - single server hosting the frontend and API",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node server/server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "nodemailer": "^6.9.7"
+  }
+}

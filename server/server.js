@@ -56,6 +56,14 @@ app.use("/", (req, res, next) => {
 const CONFIG_PATH = path.join(__dirname, "smtp-config.json");
 
 function loadConfig() {
+    // Environment variables take priority (production / Render / Railway / VPS)
+    if (process.env.GMAIL_EMAIL && process.env.GMAIL_APP_PASSWORD) {
+        return {
+            email: process.env.GMAIL_EMAIL,
+            appPassword: process.env.GMAIL_APP_PASSWORD
+        };
+    }
+
     try {
         if (fs.existsSync(CONFIG_PATH)) {
             const data = fs.readFileSync(CONFIG_PATH, "utf-8");
