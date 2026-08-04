@@ -17,8 +17,19 @@
 
 const EmailService = {
 
-    // Local SMTP Server URL
-    SMTP_SERVER_URL: "http://localhost:3001",
+    // API server URL.
+    // In production the frontend and API are served from the same origin, so we
+    // default to the current page's origin (no more hardcoded localhost:3001).
+    // You can override it anytime with:
+    //   localStorage.setItem("cmsApiUrl", "https://your-api.example.com");
+    SMTP_SERVER_URL: (function () {
+        if (window.CMS_API_URL) return window.CMS_API_URL;
+        try {
+            const saved = localStorage.getItem("cmsApiUrl");
+            if (saved) return saved.replace(/\/+$/, "");
+        } catch (e) { /* ignore */ }
+        return window.location.origin;
+    })(),
 
     // SMTP Settings (stored in localStorage)
     SMTP_KEY: "cmsSmtpSettings",

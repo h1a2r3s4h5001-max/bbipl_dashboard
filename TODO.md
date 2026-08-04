@@ -1,13 +1,33 @@
-# OTP Login Fix - Completed
+# Hosting Project - Task Tracking
 
-## Root Cause
-1. **`js/login.js` was corrupted** — it contained broken text (`setTimeout(()The file is corrupted...`) and a literal `<create_file>` block embedded in the middle of the code. This made the JavaScript syntactically invalid, so the browser failed to parse it and OTP login never worked.
-2. **Class collision in `login.html`** — Registration OTP inputs had class `reg-otp-input otp-input` (both classes). The login selector `.otp-input` matched ALL 12 OTP inputs (6 login + 6 registration), breaking login verification.
+## Goal
+Make the BBIPL CMS deployable as a single production server (Option C) and document the full hosting process.
 
-## Fixes Applied
-- [x] Rewrote `js/login.js` completely with clean, valid code (shared `OTP` utility object)
-- [x] Removed stray `otp-input` class from the 6 registration OTP inputs in `login.html`
-- [x] Added `.reg-otp-input` to CSS selectors in `css/login.css` so registration OTP boxes keep their styling
-- [x] Verified SMTP server is running (localhost:3001)
-- [x] Verified JS passes `node --check` syntax validation
-- [x] Tested OTP delivery via `/api/send-otp` (returns success with Gmail message ID)
+## Tasks
+
+- [x] Analyzed project structure (frontend static files + Node.js backend)
+- [x] Identified hardcoded `localhost:3001` references in `js/email.js` and `js/settings.js`
+- [x] Modify `server/server.js` to:
+  - [x] Read `PORT` from `process.env.PORT` (fallback 3001)
+  - [x] Serve static files from the project root
+  - [x] Add SPA-style fallback for `.html` pages
+  - [x] Keep all `/api/*` routes intact
+- [x] Modify `js/email.js` to use same-origin / configurable API URL
+- [x] Modify `js/settings.js` to replace hardcoded `localhost:3001`
+- [x] Create `HOSTING-GUIDE.md` with Render / Railway / VPS deployment steps
+- [x] Create `README.md` with project overview, setup, and deploy instructions
+- [x] Verify edited JS files pass syntax check (`node --check`)
+- [x] Test locally by starting server and visiting `http://localhost:3001`
+  - [x] `index.html` served (200)
+  - [x] `settings.html` direct navigation (200)
+  - [x] `/api/status` returns SMTP config (200)
+
+## Summary
+
+The BBIPL CMS is now a **single-server production-ready** application:
+
+- **`server/server.js`** serves the static frontend AND all `/api/*` routes on one port, reads `PORT` from env, and supports direct navigation to `.html` pages.
+- **`js/email.js`** and **`js/settings.js`** no longer hardcode `localhost:3001` — they use the same origin (overridable via `window.CMS_API_URL` or `localStorage.cmsApiUrl`).
+- **`HOSTING-GUIDE.md`** documents deployment to Render, Railway, and a VPS.
+- **`README.md`** provides the full project overview, setup, and deploy instructions.
+</content>

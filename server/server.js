@@ -11,11 +11,43 @@ const path = require("path");
 const fs = require("fs");
 
 const app = express();
-const PORT = 3001;
+
+// Port from environment (Render/Railway/VPS set this) with fallback to 3001
+const PORT = process.env.PORT || 3001;
+
+// Path to the project root (parent of the server/ directory) so we can serve
+// the static frontend files (index.html, css/, js/, images/) from the same server.
+const PROJECT_ROOT = path.join(__dirname, "..");
 
 // Middleware
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
+
+// ==========================================================
+// STATIC FRONTEND (served from the same server/port)
+// ==========================================================
+app.use(express.static(PROJECT_ROOT));
+
+// SPA-style fallback: if the request is not an API call and does not match a
+// static file, serve the matching .html file (or index.html). This lets
+// direct navigation to /settings.html, /users.html, etc. work in production.
+app.use("/", (req, res, next) => {
+    if (req.path.startsWith("/api/")) {
+        return next();
+    }
+    const requestedPath = req.path.replace(/^\/+/, "") || "index.html";
+    const candidates = [
+        path.join(PROJECT_ROOT, requestedPath),
+        path.join(PROJECT_ROOT, requestedPath + ".html"),
+        path.join(PROJECT_ROOT, "index.html")
+    ];
+    for (const file of candidates) {
+        if (fs.existsSync(file) && fs.statSync(file).isFile()) {
+            return res.sendFile(file);
+        }
+    }
+    return next();
+});
 
 // ==========================================================
 // CONFIGURATION FILE

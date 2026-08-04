@@ -342,7 +342,18 @@ document.addEventListener("DOMContentLoaded", () => {
             checkSmtpStatusBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking...';
 
             try {
-                const response = await fetch("http://localhost:3001/api/status");
+                // Same-origin API URL (matches the static server). Overridable via
+                // localStorage "cmsApiUrl" or window.CMS_API_URL if the API is hosted separately.
+                const apiUrl = (function () {
+                    if (window.CMS_API_URL) return window.CMS_API_URL;
+                    try {
+                        const saved = localStorage.getItem("cmsApiUrl");
+                        if (saved) return saved.replace(/\/+$/, "");
+                    } catch (e) { /* ignore */ }
+                    return window.location.origin;
+                })();
+
+                const response = await fetch(`${apiUrl}/api/status`);
                 const data = await response.json();
                 
                 if (smtpStatus) {
